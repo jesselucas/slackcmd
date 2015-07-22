@@ -15,24 +15,32 @@ type Command interface {
 	Request(sc *SlashCommand) (*CommandPayload, error)
 }
 
+type Field struct {
+	Title string `json:"title"`
+	Value string `json:"value"`
+	Short bool   `json:"short"`
+}
+
+type Attachment struct {
+	Fallback  string  `json:"fallback"`
+	Title     string  `json:"title"`
+	TitleLink string  `json:"title_link"`
+	Text      string  `json:"text"`
+	Pretext   string  `json:"pretext"`
+	Color     string  `json:"color"`
+	Fields    []Field `json:"fields"`
+}
+
 // CommandPayload
 type CommandPayload struct {
-	Channel     string `json:"channel"`
-	Username    string `json:"username"`
-	Emoji       string `json:"icon_emoji"`
-	EmojiURL    string `json:"icon_url"`
-	Text        string `json:"text"`
-	Attachments []struct {
-		Fallback string `json:"fallback"`
-		Text     string `json:"text"`
-		Pretext  string `json:"pretext"`
-		Color    string `json:"color"`
-		Fields   []struct {
-			Title string `json:"title"`
-			Value string `json:"value"`
-			Short bool   `json:"short"`
-		} `json:"fields"`
-	} `json:"attachments"`
+	Channel     string       `json:"channel"`
+	Username    string       `json:"username"`
+	Emoji       string       `json:"icon_emoji"`
+	EmojiURL    string       `json:"icon_url"`
+	Text        string       `json:"text"`
+	Attachments []Attachment `json:"attachments"`
+	UnfurlMedia bool         `json:"unfurl_media"`
+	UnfurlLinks bool         `json:"unfurl_links"`
 }
 
 // struct to hold params sent from slacks slash command
