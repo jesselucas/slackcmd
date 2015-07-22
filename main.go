@@ -110,6 +110,12 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 	// command request return payload
 	cp, err := command.Request(sc)
 
+	if cp == nil {
+		err := errors.New("Unauthorized")
+		http.Error(w, err.Error(), http.StatusForbidden)
+		return
+	}
+
 	if err != nil {
 		err := errors.New("Unauthorized")
 		http.Error(w, err.Error(), http.StatusForbidden)
@@ -123,8 +129,6 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		cpJSONString := string(cpJSON[:])
-
-		fmt.Println(cpJSONString)
 
 		// Make the request to the Slack API.
 		http.PostForm(sc.Hook, url.Values{"payload": {cpJSONString}})
