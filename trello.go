@@ -81,9 +81,10 @@ func (t Trello) Request(sc *SlashCommand) (*CommandPayload, error) {
 	}
 
 	cp := &CommandPayload{
-		Channel:  fmt.Sprintf("@%v", sc.UserName),
-		Username: "FG Bot",
-		Emoji:    ":fgdot:",
+		Channel:       fmt.Sprintf("@%v", sc.UserName),
+		Username:      "FG Bot",
+		Emoji:         ":fgdot:",
+		SlashResponse: true,
 	}
 
 	// construct url for Trello

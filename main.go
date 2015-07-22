@@ -33,14 +33,15 @@ type Attachment struct {
 
 // CommandPayload
 type CommandPayload struct {
-	Channel     string       `json:"channel"`
-	Username    string       `json:"username"`
-	Emoji       string       `json:"icon_emoji"`
-	EmojiURL    string       `json:"icon_url"`
-	Text        string       `json:"text"`
-	Attachments []Attachment `json:"attachments"`
-	UnfurlMedia bool         `json:"unfurl_media"`
-	UnfurlLinks bool         `json:"unfurl_links"`
+	Channel       string       `json:"channel"`
+	Username      string       `json:"username"`
+	Emoji         string       `json:"icon_emoji"`
+	EmojiURL      string       `json:"icon_url"`
+	Text          string       `json:"text"`
+	Attachments   []Attachment `json:"attachments"`
+	UnfurlMedia   bool         `json:"unfurl_media"`
+	UnfurlLinks   bool         `json:"unfurl_links"`
+	SlashResponse bool
 }
 
 // struct to hold params sent from slacks slash command
@@ -129,6 +130,12 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusForbidden)
 		return
 	} else {
+
+		// check if the command wants to send a slash command response
+		if cp.SlashResponse {
+			w.Write([]byte(cp.Text))
+		}
+
 		cpJSON, err := json.Marshal(cp)
 		if err != nil {
 			err := errors.New("Unauthorized")
