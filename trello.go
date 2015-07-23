@@ -66,9 +66,46 @@ func (c card) String() string {
 
 func (t Trello) Request(sc *SlashCommand) (*CommandPayload, error) {
 
+	// create payload
+	cp := &CommandPayload{
+		Channel:       fmt.Sprintf("@%v", sc.UserName),
+		Username:      "FG Bot",
+		Emoji:         ":fgdot:",
+		SlashResponse: true,
+		SendPayload:   false,
+	}
+
 	fmt.Println("sc.Text?", sc.Text)
 
+	// TODO refact c and commands variable names
+
 	c := strings.Fields(sc.Text)
+	var flags []string
+	var noFlags []string
+
+	for _, value := range c {
+		if strings.HasPrefix(value, "-") {
+			flags = append(flags, value)
+		} else {
+			noFlags = append(noFlags, value)
+		}
+	}
+
+	if len(flags) > 0 {
+		for _, flag := range flags {
+			switch flag {
+			case "-c":
+				fmt.Println("send to payload channel")
+				cp.Channel = fmt.Sprintf("#%v", sc.ChannelName)
+				cp.SendPayload = true
+			case "-p":
+				fmt.Println("send payload to user")
+				cp.SendPayload = true
+			}
+		}
+	}
+
+	c = noFlags
 
 	fmt.Println("c strings?", c)
 
@@ -78,13 +115,6 @@ func (t Trello) Request(sc *SlashCommand) (*CommandPayload, error) {
 
 	for i := 0; i < len(c); i++ {
 		c[i] = strings.Replace(c[i], "_", " ", -1)
-	}
-
-	cp := &CommandPayload{
-		Channel:       fmt.Sprintf("@%v", sc.UserName),
-		Username:      "FG Bot",
-		Emoji:         ":fgdot:",
-		SlashResponse: true,
 	}
 
 	// construct url for Trello

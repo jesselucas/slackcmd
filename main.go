@@ -42,6 +42,7 @@ type CommandPayload struct {
 	UnfurlMedia   bool         `json:"unfurl_media"`
 	UnfurlLinks   bool         `json:"unfurl_links"`
 	SlashResponse bool
+	SendPayload   bool
 }
 
 // struct to hold params sent from slacks slash command
@@ -59,7 +60,6 @@ type SlashCommand struct {
 }
 
 func createSlashCommand(w http.ResponseWriter, r *http.Request) *SlashCommand {
-	var hook string
 	var v url.Values
 
 	switch r.Method {
@@ -68,14 +68,6 @@ func createSlashCommand(w http.ResponseWriter, r *http.Request) *SlashCommand {
 		v = r.Form
 	case "GET":
 		v = r.URL.Query()
-	}
-
-	// make sure a webhook URL is passed in
-	hook = v.Get("hook")
-	if hook == "" {
-		err := errors.New("webhook URL not passed")
-		http.Error(w, err.Error(), http.StatusForbidden)
-		return nil
 	}
 
 	sc := &SlashCommand{
@@ -136,17 +128,20 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(cp.Text))
 		}
 
-		cpJSON, err := json.Marshal(cp)
-		if err != nil {
-			err := errors.New("Unauthorized")
-			http.Error(w, err.Error(), http.StatusForbidden)
-			return
+		// don't send payload if hook URL isn't passed
+		if sc.Hook != "" && cp.SendPayload == true {
+			cpJSON, err := json.Marshal(cp)
+			if err != nil {
+				err := errors.New("Unauthorized")
+				http.Error(w, err.Error(), http.StatusForbidden)
+				return
+			}
+
+			cpJSONString := string(cpJSON[:])
+
+			// Make the request to the Slack API.
+			http.PostForm(sc.Hook, url.Values{"payload": {cpJSONString}})
 		}
-
-		cpJSONString := string(cpJSON[:])
-
-		// Make the request to the Slack API.
-		http.PostForm(sc.Hook, url.Values{"payload": {cpJSONString}})
 	}
 }
 
