@@ -98,9 +98,11 @@ func (t Trello) Request(sc *SlashCommand) (*CommandPayload, error) {
 				fmt.Println("send to payload channel")
 				cp.Channel = fmt.Sprintf("#%v", sc.ChannelName)
 				cp.SendPayload = true
+				cp.SlashResponse = false
 			case "-p":
 				fmt.Println("send payload to user")
 				cp.SendPayload = true
+				cp.SlashResponse = false
 			}
 		}
 	}
