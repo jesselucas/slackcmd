@@ -54,7 +54,7 @@ func (c card) String() string {
 	if c.URL {
 		url = c.Name
 	} else {
-		url = fmt.Sprintf("<https://trello.com/c/%v", c.Id)
+		url = fmt.Sprintf("<https://trello.com/c/%v>", c.Id)
 	}
 
 	return fmt.Sprintf(
