@@ -31,7 +31,7 @@ type Attachment struct {
 	Fields    []Field `json:"fields"`
 }
 
-// CommandPayload
+// CommandPayload https://api.slack.com/docs/formatting
 type CommandPayload struct {
 	Channel       string       `json:"channel"`
 	Username      string       `json:"username"`
@@ -41,6 +41,7 @@ type CommandPayload struct {
 	Attachments   []Attachment `json:"attachments"`
 	UnfurlMedia   bool         `json:"unfurl_media"`
 	UnfurlLinks   bool         `json:"unfurl_links"`
+	Parse         string       `json:"parse"`
 	SlashResponse bool
 	SendPayload   bool
 }
