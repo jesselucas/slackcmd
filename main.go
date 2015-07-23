@@ -98,13 +98,19 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check url to see what command
-	cmd := r.URL.Path[len("/cmd/"):]
+	cmdURL := r.URL.Path[len("/cmd/"):]
 
-	fmt.Println("command", cmd)
+	fmt.Println("command", cmdURL)
 
 	// Each command implements the handler interface ServeHTTP(ResponseWriter, *Request)
 	var command Command
-	command = Trello{}
+
+	switch cmdURL {
+	case "trello":
+		command = Trello{}
+	case "beats1":
+		command = Beats1{}
+	}
 
 	fmt.Println("slash command:", sc.Text)
 
