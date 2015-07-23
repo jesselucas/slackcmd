@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
-	"regexp"
 	"strings"
 )
 
@@ -51,16 +49,12 @@ type card struct {
 func (c card) String() string {
 	var url string
 
-	if c.URL {
-		url = c.Name
-	} else {
-		url = fmt.Sprintf("https://trello.com/c/%v", c.Id)
-	}
+	url = fmt.Sprintf("https://trello.com/c/%v", c.Id)
 
 	return fmt.Sprintf(
-		"• <%v|%v> \n",
-		url,
+		"• %v [<%v|edit>] \n",
 		c.Name,
+		url,
 	)
 }
 
@@ -239,8 +233,6 @@ func (t Trello) Request(sc *SlashCommand) (*CommandPayload, error) {
 
 	// iterate over boards and create string to send
 	for _, card := range foundList.Cards {
-		// check if they are urls
-		card.URL = IsURL(card.Name)
 		responseString += fmt.Sprint(card)
 	}
 
@@ -253,21 +245,4 @@ func (t Trello) Request(sc *SlashCommand) (*CommandPayload, error) {
 func formatForSlack(c []string, s string) string {
 	path := strings.Join(c, " ")
 	return fmt.Sprintf("/fg %v ```%v```", path, s)
-}
-
-// IsUrl test if the rxURL regular expression matches a string
-func IsURL(s string) bool {
-	rxURL := regexp.MustCompile(`\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))`)
-
-	if s == "" || len(s) >= 2083 || len(s) <= 10 || strings.HasPrefix(s, ".") {
-		return false
-	}
-	u, err := url.Parse(s)
-	if err != nil {
-		return false
-	}
-	if strings.HasPrefix(u.Host, ".") {
-		return false
-	}
-	return rxURL.MatchString(s)
 }
