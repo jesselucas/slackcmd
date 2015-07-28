@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -83,6 +84,12 @@ func (c card) String() string {
 // }
 
 func (t Trello) Request(sc *SlashCommand) (*CommandPayload, error) {
+	// Verify the request is coming from Slack
+	slackAPIKey := os.Getenv("SLACK_KEY_TRELLO")
+	if sc.Token != slackAPIKey {
+		err := errors.New("Unauthorized Slack")
+		return nil, err
+	}
 
 	// create payload
 	cp := &CommandPayload{

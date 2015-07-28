@@ -88,15 +88,7 @@ func createSlashCommand(w http.ResponseWriter, r *http.Request) *SlashCommand {
 }
 
 func commandHandler(w http.ResponseWriter, r *http.Request) {
-	slackAPIKey := os.Getenv("SLACK_KEY")
-
 	sc := createSlashCommand(w, r)
-	// Verify the request is coming from Slack
-	if sc.Token != slackAPIKey {
-		err := errors.New("Unauthorized")
-		http.Error(w, err.Error(), http.StatusForbidden)
-		return
-	}
 
 	// check url to see what command
 	cmdURL := r.URL.Path[len("/cmd/"):]
@@ -106,6 +98,7 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 	// Each command implements the handler interface ServeHTTP(ResponseWriter, *Request)
 	var command Command
 
+	// Add commands here
 	switch cmdURL {
 	case "trello":
 		command = Trello{}
@@ -115,7 +108,7 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("slash command:", sc.Text)
 
-	// command request return payload
+	// command request returns payload
 	cp, err := command.Request(sc)
 
 	if cp == nil {
