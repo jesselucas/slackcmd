@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jesselucas/slackcmd/beats1"
+	"github.com/jesselucas/slackcmd/commands/beats1"
+	"github.com/jesselucas/slackcmd/commands/trello"
 	"github.com/jesselucas/slackcmd/slack"
-	"github.com/jesselucas/slackcmd/trello"
 	"log"
 	"net/http"
 	"net/url"
@@ -54,9 +54,9 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 	// Add commands here
 	switch cmdURL {
 	case "trello":
-		command = trello.Trello{}
+		command = trello.Command{}
 	case "beats1":
-		command = beats1.Beats1{}
+		command = beats1.Command{}
 	}
 
 	fmt.Println("slash command:", sc.Text)

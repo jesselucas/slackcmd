@@ -5,10 +5,10 @@ import (
 	"github.com/jesselucas/slackcmd/slack"
 )
 
-type Beats1 struct {
+type Command struct {
 }
 
-func (b Beats1) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
+func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
 	// create payload
 	cp := &slack.CommandPayload{
 		Channel:       fmt.Sprintf("@%v", sc.UserName),

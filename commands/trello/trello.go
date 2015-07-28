@@ -13,78 +13,10 @@ import (
 	"strings"
 )
 
-type Trello struct {
+type Command struct {
 }
 
-type board struct {
-	Name string
-	Id   string
-}
-
-func (b board) String() string {
-	return fmt.Sprintf(
-		"• <https://trello.com/b/%v|%v> \n",
-		b.Id,
-		strings.Replace(b.Name, " ", "_", -1),
-	)
-}
-
-type list struct {
-	Name    string
-	Id      string
-	IdBoard string
-	Cards   []card
-}
-
-func (l list) String() string {
-	return fmt.Sprintf(
-		"• <https://trello.com/b/%v|%v> \n",
-		l.IdBoard,
-		strings.Replace(l.Name, " ", "_", -1),
-	)
-}
-
-type card struct {
-	Name string
-	Id   string
-	URL  bool
-}
-
-func (c card) String() string {
-	var url string
-
-	url = fmt.Sprintf("https://trello.com/c/%v", c.Id)
-
-	if c.URL {
-		return fmt.Sprintf(
-			"• <%v|%v> [<%v|edit>] \n",
-			c.Name,
-			c.Name,
-			url,
-		)
-
-	}
-
-	return fmt.Sprintf(
-		"• %v [<%v|edit>] \n",
-		c.Name,
-		url,
-	)
-}
-
-// func formatStringForSlack(s string) string {
-// 	// 	& replaced with &amp;
-// 	// < replaced with &lt;
-// 	// > replaced with &gt;
-
-// 	strings.Replace(s, "&", "&amp;", -1)
-// 	strings.Replace(s, "<", "&lt;", -1)
-// 	strings.Replace(s, ">", "&gt;/", -1)
-
-// 	return s
-// }
-
-func (t Trello) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
+func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
 	// Verify the request is coming from Slack
 	slackAPIKey := os.Getenv("SLACK_KEY_TRELLO")
 	if sc.Token != slackAPIKey {
@@ -302,3 +234,71 @@ func IsURL(s string) bool {
 	}
 	return rxURL.MatchString(s)
 }
+
+type board struct {
+	Name string
+	Id   string
+}
+
+func (b board) String() string {
+	return fmt.Sprintf(
+		"• <https://trello.com/b/%v|%v> \n",
+		b.Id,
+		strings.Replace(b.Name, " ", "_", -1),
+	)
+}
+
+type list struct {
+	Name    string
+	Id      string
+	IdBoard string
+	Cards   []card
+}
+
+func (l list) String() string {
+	return fmt.Sprintf(
+		"• <https://trello.com/b/%v|%v> \n",
+		l.IdBoard,
+		strings.Replace(l.Name, " ", "_", -1),
+	)
+}
+
+type card struct {
+	Name string
+	Id   string
+	URL  bool
+}
+
+func (c card) String() string {
+	var url string
+
+	url = fmt.Sprintf("https://trello.com/c/%v", c.Id)
+
+	if c.URL {
+		return fmt.Sprintf(
+			"• <%v|%v> [<%v|edit>] \n",
+			c.Name,
+			c.Name,
+			url,
+		)
+
+	}
+
+	return fmt.Sprintf(
+		"• %v [<%v|edit>] \n",
+		c.Name,
+		url,
+	)
+}
+
+// func formatStringForSlack(s string) string {
+// 	// 	& replaced with &amp;
+// 	// < replaced with &lt;
+// 	// > replaced with &gt;
+
+// 	strings.Replace(s, "&", "&amp;", -1)
+// 	strings.Replace(s, "<", "&lt;", -1)
+// 	strings.Replace(s, ">", "&gt;/", -1)
+
+// 	return s
+// }
