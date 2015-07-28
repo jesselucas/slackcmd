@@ -1,9 +1,10 @@
-package main
+package trello
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/jesselucas/slackcmd/slack"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -83,7 +84,7 @@ func (c card) String() string {
 // 	return s
 // }
 
-func (t Trello) Request(sc *SlashCommand) (*CommandPayload, error) {
+func (t Trello) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
 	// Verify the request is coming from Slack
 	slackAPIKey := os.Getenv("SLACK_KEY_TRELLO")
 	if sc.Token != slackAPIKey {
@@ -92,7 +93,7 @@ func (t Trello) Request(sc *SlashCommand) (*CommandPayload, error) {
 	}
 
 	// create payload
-	cp := &CommandPayload{
+	cp := &slack.CommandPayload{
 		Channel:       fmt.Sprintf("@%v", sc.UserName),
 		Username:      "FG Bot",
 		Emoji:         ":fgdot:",
