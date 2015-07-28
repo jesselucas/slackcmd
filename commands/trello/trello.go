@@ -86,6 +86,7 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 	)
 
 	res, err := http.Get(url)
+	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
@@ -140,6 +141,7 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 	// fmt.Println("url: ", url)
 
 	res, err = http.Get(url)
+	defer res.Body.Close()
 	body, _ = ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
@@ -188,6 +190,7 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 		os.Getenv("TRELLO_TOKEN"),
 	)
 	res, err = http.Get(url)
+	defer res.Body.Close()
 	body, _ = ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
