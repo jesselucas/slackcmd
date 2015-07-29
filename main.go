@@ -79,6 +79,8 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 		cmd = trello.Command{}
 	case "/beats1":
 		cmd = beats1.Command{}
+	case "/conference":
+		cmd = calendar.Command{}
 	default:
 		err := errors.New("No Command found")
 		http.Error(w, err.Error(), http.StatusForbidden)
