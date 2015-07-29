@@ -1,5 +1,9 @@
 package slack
 
+import (
+	"strings"
+)
+
 // interface for commands
 type Command interface {
 	Request(sc *SlashCommand) (*CommandPayload, error)
@@ -48,4 +52,16 @@ type SlashCommand struct {
 	Command     string
 	Text        string
 	Hook        string
+}
+
+func SanitizeString(s string) string {
+	// 	& replaced with &amp;
+	// < replaced with &lt;
+	// > replaced with &gt;
+
+	strings.Replace(s, "&", "&amp;", -1)
+	strings.Replace(s, "<", "&lt;", -1)
+	strings.Replace(s, ">", "&gt;/", -1)
+
+	return s
 }

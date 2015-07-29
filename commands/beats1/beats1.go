@@ -107,8 +107,8 @@ func (t tweet) String() string {
 
 	return fmt.Sprintf(
 		"<%v|%v>",
-		expandedURL,
-		text,
+		slack.SanitizeString(expandedURL),
+		slack.SanitizeString(text),
 	)
 }
 
