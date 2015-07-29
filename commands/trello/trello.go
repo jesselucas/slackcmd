@@ -17,8 +17,14 @@ type Command struct {
 }
 
 func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
-	// Verify the request is coming from Slack
 	slackAPIKey := os.Getenv("SLACK_KEY_TRELLO")
+	trelloKey := os.Getenv("TRELLO_KEY")
+	trelloToken := os.Getenv("TRELLO_TOKEN")
+	if slackAPIKey == "" || trelloKey == "" || trelloToken == "" {
+		panic("Missing required environment variable")
+	}
+
+	// Verify the request is coming from Slack
 	if sc.Token != slackAPIKey {
 		err := errors.New("Unauthorized Slack")
 		return nil, err
@@ -81,8 +87,8 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 	url := fmt.Sprintf(
 		"https://api.trello.com/1/organizations/%v/boards/?fields=name&filter=open&key=%v&token=%v",
 		"forestgiant",
-		os.Getenv("TRELLO_KEY"),
-		os.Getenv("TRELLO_TOKEN"),
+		trelloKey,
+		trelloToken,
 	)
 
 	res, err := http.Get(url)
@@ -134,8 +140,8 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 	url = fmt.Sprintf(
 		"https://api.trello.com/1/boards/%v/lists/?fields=name,idBoard&key=%v&token=%v",
 		foundBoard.Id,
-		os.Getenv("TRELLO_KEY"),
-		os.Getenv("TRELLO_TOKEN"),
+		trelloKey,
+		trelloToken,
 	)
 
 	// fmt.Println("url: ", url)
@@ -186,8 +192,8 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 	url = fmt.Sprintf(
 		"https://api.trello.com/1/lists/%v/?fields=name&cards=open&card_fields=name&key=%v&token=%v",
 		foundList.Id,
-		os.Getenv("TRELLO_KEY"),
-		os.Getenv("TRELLO_TOKEN"),
+		trelloKey,
+		trelloToken,
 	)
 	res, err = http.Get(url)
 	defer res.Body.Close()
