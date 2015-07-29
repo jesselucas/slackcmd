@@ -105,11 +105,20 @@ func (t tweet) String() string {
 	// trime white space
 	text = strings.TrimSpace(text)
 
+	// if there is an expandedURL
+	if expandedURL != "" {
+		return fmt.Sprintf(
+			"<%v|%v>",
+			expandedURL,
+			text,
+		)
+	}
+
 	return fmt.Sprintf(
-		"<%v|%v>",
-		slack.SanitizeString(expandedURL),
-		slack.SanitizeString(text),
+		"%v",
+		text,
 	)
+
 }
 
 type entity struct {
