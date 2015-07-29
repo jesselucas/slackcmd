@@ -20,6 +20,7 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 	slackAPIKey := os.Getenv("SLACK_KEY_TRELLO")
 	trelloKey := os.Getenv("TRELLO_KEY")
 	trelloToken := os.Getenv("TRELLO_TOKEN")
+	trelloOrg := "forestgiant"
 	if slackAPIKey == "" || trelloKey == "" || trelloToken == "" {
 		panic("Missing required environment variable")
 	}
@@ -86,7 +87,7 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 	// construct url for Trello
 	url := fmt.Sprintf(
 		"https://api.trello.com/1/organizations/%v/boards/?fields=name&filter=open&key=%v&token=%v",
-		"forestgiant",
+		trelloOrg,
 		trelloKey,
 		trelloToken,
 	)
