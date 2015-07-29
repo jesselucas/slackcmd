@@ -7,11 +7,36 @@ import (
 	"github.com/jesselucas/slackcmd/commands/beats1"
 	"github.com/jesselucas/slackcmd/commands/trello"
 	"github.com/jesselucas/slackcmd/slack"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 )
+
+// struct used to store environment variables from config.json
+type env struct {
+	Key   string
+	Value string
+}
+
+func setEnvFromJSON(configPath string) {
+	configFile, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		fmt.Println("config.json not found. Using os environment variables.")
+		return
+	}
+
+	var envVars []env
+	json.Unmarshal(configFile, &envVars)
+
+	// set environment variables
+	for _, env := range envVars {
+		// fmt.Println(env)
+		os.Setenv(env.Key, env.Value)
+	}
+
+}
 
 func createSlashCommand(w http.ResponseWriter, r *http.Request) *slack.SlashCommand {
 	var v url.Values
@@ -43,12 +68,7 @@ func createSlashCommand(w http.ResponseWriter, r *http.Request) *slack.SlashComm
 func commandHandler(w http.ResponseWriter, r *http.Request) {
 	sc := createSlashCommand(w, r)
 
-	// check url to see what command
-	// cmdURL := r.URL.Path[len("/cmd/"):]
-
-	// fmt.Println("command", cmdURL)
-
-	//
+	// interface reference for slack Commands
 	var cmd slack.Command
 
 	// Add commands here
@@ -57,6 +77,10 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 		cmd = trello.Command{}
 	case "/beats1":
 		cmd = beats1.Command{}
+	default:
+		err := errors.New("No Command found")
+		http.Error(w, err.Error(), http.StatusForbidden)
+		return
 	}
 
 	fmt.Println("slash command:", sc.Text)
@@ -99,6 +123,9 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// setup environment variables if a config json exist
+	setEnvFromJSON("config.json")
+
 	// url setup. FIX make more generic
 	var url string
 	if os.Getenv("PORT") != "" {
@@ -109,6 +136,7 @@ func main() {
 
 	// vs := validateSlackToken(http.HandlerFunc(commandHandler), slackAPIKey)
 	http.HandleFunc("/cmd/", commandHandler)
+	http.HandleFunc("/cmd", commandHandler)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Go away!")
