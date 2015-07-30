@@ -8,7 +8,6 @@ import (
 	"github.com/jesselucas/slackcmd/commands/beats1"
 	"github.com/jesselucas/slackcmd/commands/calendar"
 	"github.com/jesselucas/slackcmd/commands/trello"
-	"github.com/jesselucas/slackcmd/slack"
 	"io/ioutil"
 	"log"
 	"net/http"
