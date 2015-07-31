@@ -9,6 +9,7 @@ import (
     "net/url"
     "os"
     "time" 
+    "strings"
 
     "github.com/jesselucas/slackcmd/slack"
     "golang.org/x/net/context"
@@ -56,6 +57,20 @@ func getAccessToken(clientID string, clientSecret string, refreshToken string) o
     var token oauth2.Token
     json.Unmarshal(bodyData, &token)
     return token
+}
+
+func getNextWeekdayOccurance(paramString string) time.Time {
+    var inputString = strings.TrimSpace(paramString)
+    now := time.Now()
+    for i:=0; i<7; i++ {
+        weekday := time.Weekday(i)
+        if strings.ToLower(inputString) == strings.ToLower(weekday.String()) {
+            daysUntilRequestedDay := (int(weekday) - int(now.Weekday()) + 7) % 7
+            t := easyTime{now.AddDate(0, 0, daysUntilRequestedDay)}
+            return t.beginningOfDay()
+        }
+    }
+    return time.Now()
 }
 
 func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
@@ -111,13 +126,13 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
     }
 
     // Setup the parameters for our calendar request.
-    // We want to request all events from now until the end of today
-    now := easyTime{time.Now()}
-    timeMin := now.Format(time.RFC3339)
-    timeMax := now.endOfDay().Format(time.RFC3339)
+    // We want to request all events from the specified
+    // date until the end of that day
+    requestDate := easyTime{getNextWeekdayOccurance(sc.Text)}
+    timeMin := requestDate.Format(time.RFC3339)
+    timeMax := requestDate.endOfDay().Format(time.RFC3339)
 
-    // We want to request this information for a specific calendar ID,
-    // which is indicated by the CALENDAR_ID environment variable
+    // We want to request this information for a specific calendar ID
     events, err := service.Events.List(calendarID).ShowDeleted(false).SingleEvents(true).TimeMin(timeMin).TimeMax(timeMax).MaxResults(50).OrderBy("startTime").Do()
     if err != nil {
         err := errors.New("Unable to retrieve calendar events.")
@@ -125,7 +140,7 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
     }
 
     // Loop through the events received, and append them to the payload text
-    payloadText := "Conference Room Schedule: " + time.Now().Format("Jan 2, 2006") + "\n"
+    payloadText := "Conference Room Schedule: " + requestDate.Format("Mon. Jan 2, 2006") + "\n"
     format := "03:04PM"
     if len(events.Items) > 0 {
         for _, i := range events.Items {
@@ -147,7 +162,7 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
             payloadText += fmt.Sprintf("• [%v] <%v|%v>\n", timeString, i.HtmlLink, i.Summary)
         }
     } else {
-        payloadText = "No upcoming events found.\n"
+        payloadText += "• No events scheduled.\n"
     }
 
     payload.Text = formatForSlack(payloadText)
