@@ -210,6 +210,11 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 		responseString += fmt.Sprint(card)
 	}
 
+	if responseString == "" {
+		cp.Text = formatForSlack(commands, "This list has no cards to display.")
+		return cp, nil
+	}
+
 	cp.Text = formatForSlack(commands, responseString)
 
 	return cp, nil
