@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jesselucas/slackcmd/slack"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/jesselucas/slackcmd/slack"
 )
 
 type Command struct {
