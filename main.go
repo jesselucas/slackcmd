@@ -4,15 +4,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jesselucas/slackcmd/slack"
-	"github.com/jesselucas/slackcmd/commands/beats1"
-	"github.com/jesselucas/slackcmd/commands/calendar"
-	"github.com/jesselucas/slackcmd/commands/trello"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
+
+	"github.com/jesselucas/slackcmd/commands/beats1"
+	"github.com/jesselucas/slackcmd/commands/calendar"
+	"github.com/jesselucas/slackcmd/commands/trello"
+	"github.com/jesselucas/slackcmd/slack"
 )
 
 // struct used to store environment variables from config.json
@@ -62,6 +63,8 @@ func createSlashCommand(w http.ResponseWriter, r *http.Request) *slack.SlashComm
 		Text:        v.Get("text"),
 		Hook:        v.Get("hook"),
 	}
+
+	fmt.Println("From slack:", sc)
 
 	return sc
 }
