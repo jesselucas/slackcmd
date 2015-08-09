@@ -66,9 +66,15 @@ func SeparateFlags(t string) (c string, f []string) {
 	for _, value := range splitFlags {
 		// Test for flags and remove prefix.
 		// Check -- first since - will always find --
-		if strings.HasPrefix(value, "-") {
-			if strings.HasPrefix(value, "--") {
+		if strings.HasPrefix(value, "-") || strings.HasPrefix(value, "—") {
+			if strings.HasPrefix(value, "——") {
+				trimmedFlag = strings.TrimPrefix(value, "——")
+				parsedFlags = append(parsedFlags, trimmedFlag)
+			} else if strings.HasPrefix(value, "--") {
 				trimmedFlag = strings.TrimPrefix(value, "--")
+				parsedFlags = append(parsedFlags, trimmedFlag)
+			} else if strings.HasPrefix(value, "—") {
+				trimmedFlag = strings.TrimPrefix(value, "—")
 				parsedFlags = append(parsedFlags, trimmedFlag)
 			} else {
 				trimmedFlag = strings.TrimPrefix(value, "-")
