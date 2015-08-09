@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/dghubble/oauth1"
-	"github.com/jesselucas/slackcmd/slack"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/dghubble/oauth1"
+	"github.com/jesselucas/slackcmd/slack"
 )
 
 type Command struct {
