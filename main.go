@@ -64,8 +64,6 @@ func createSlashCommand(w http.ResponseWriter, r *http.Request) *slack.SlashComm
 		Hook:        v.Get("hook"),
 	}
 
-	fmt.Println("From slack:", sc)
-
 	return sc
 }
 
@@ -75,14 +73,20 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 	// interface reference for slack Commands
 	var cmd slack.Command
 
+	// Create FlagSet to store flags
+	fs := &slack.FlagSet{}
+
 	// Add commands here
 	switch sc.Command {
 	case "/fg":
 		cmd = trello.Command{}
+		fs.Usage = "/fg help: FG Trello access"
 	case "/beats1":
 		cmd = beats1.Command{}
+		fs.Usage = "/beats1 help: Song currently playing on Beats1"
 	case "/conference":
 		cmd = calendar.Command{}
+		fs.Usage = "/conference help: Schedule for FG Conference room"
 	default:
 		err := errors.New("No Command found")
 		http.Error(w, err.Error(), http.StatusForbidden)
@@ -90,6 +94,10 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println("slash command:", sc.Text)
+
+	// parse out flags
+	parsedCommands, flags := slack.SeparateFlags(sc.Text)
+	sc.Text = parsedCommands
 
 	// command request returns payload
 	cp, err := cmd.Request(sc)
@@ -105,6 +113,24 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusForbidden)
 		return
 	} else {
+		// Set Flags for Commands
+		slack.SetFlag(fs, "channel", "c", "Sends the response to the current channel", func() {
+			cp.Channel = fmt.Sprintf("#%v", sc.ChannelName)
+			cp.SendPayload = true
+			cp.SlashResponse = false
+		})
+
+		slack.SetFlag(fs, "private", "p", "Sends a private message with the response", func() {
+			cp.SendPayload = true
+			cp.SlashResponse = false
+		})
+
+		sc.Text = parsedCommands
+
+		help, response := slack.ParseFlags(fs, flags)
+		if help == true {
+			cp.Text = response
+		}
 
 		// check if the command wants to send a slash command response
 		if cp.SlashResponse {

@@ -54,6 +54,36 @@ type SlashCommand struct {
 	Hook        string
 }
 
+// Takes Slack slash command text and parses out any flags
+// Ex. "golang links -c" returns "golang links"
+func SeparateFlags(t string) (c string, f []string) {
+	var splitFlags = strings.Fields(t)
+	var parsedFlags []string
+	var trimmedFlag string
+	var parsedCommands []string
+
+	// first seperate the string into an slice of strings
+	for _, value := range splitFlags {
+		// Test for flags and remove prefix.
+		// Check -- first since - will always find --
+		if strings.HasPrefix(value, "-") {
+			if strings.HasPrefix(value, "--") {
+				trimmedFlag = strings.TrimPrefix(value, "--")
+				parsedFlags = append(parsedFlags, trimmedFlag)
+			} else {
+				trimmedFlag = strings.TrimPrefix(value, "-")
+				parsedFlags = append(parsedFlags, trimmedFlag)
+			}
+
+		} else {
+			parsedCommands = append(parsedCommands, value)
+		}
+	}
+
+	// Return string without flags and flags
+	return strings.Join(parsedCommands, " "), parsedFlags
+}
+
 func SanitizeString(s string) string {
 	// 	& replaced with &amp;
 	// < replaced with &lt;

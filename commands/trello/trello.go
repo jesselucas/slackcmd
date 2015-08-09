@@ -41,39 +41,7 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 		SendPayload:   false,
 	}
 
-	fmt.Println("sc.Text?", sc.Text)
-
-	// TODO refact c and commands variable names
-
 	c := strings.Fields(sc.Text)
-	var flags []string
-	var noFlags []string
-
-	for _, value := range c {
-		if strings.HasPrefix(value, "-") {
-			flags = append(flags, value)
-		} else {
-			noFlags = append(noFlags, value)
-		}
-	}
-
-	if len(flags) > 0 {
-		for _, flag := range flags {
-			switch flag {
-			case "-c":
-				fmt.Println("send to payload channel")
-				cp.Channel = fmt.Sprintf("#%v", sc.ChannelName)
-				cp.SendPayload = true
-				cp.SlashResponse = false
-			case "-p":
-				fmt.Println("send payload to user")
-				cp.SendPayload = true
-				cp.SlashResponse = false
-			}
-		}
-	}
-
-	c = noFlags
 
 	fmt.Println("c strings?", c)
 
@@ -160,7 +128,7 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 	// if the second command is black return lists
 	if len(c) == 1 {
 
-		fmt.Println("check command lenght", c)
+		fmt.Println("check command length", c)
 
 		// iterate over boards and create string to send
 		for _, list := range lists {

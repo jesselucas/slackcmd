@@ -66,8 +66,6 @@ func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error
 
 	var responseString string
 	for _, t := range tweets {
-		fmt.Println(t)
-
 		responseString += fmt.Sprint(t)
 	}
 
