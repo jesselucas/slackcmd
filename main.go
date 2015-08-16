@@ -112,46 +112,47 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 		err := errors.New("Unauthorized")
 		http.Error(w, err.Error(), http.StatusForbidden)
 		return
-	} else {
-		// Set Flags for Commands
-		slack.SetFlag(fs, "channel", "c", "Sends the response to the current channel", func() {
-			cp.Channel = fmt.Sprintf("#%v", sc.ChannelName)
-			cp.SendPayload = true
-			cp.SlashResponse = false
-		})
-
-		slack.SetFlag(fs, "private", "p", "Sends a private message with the response", func() {
-			cp.SendPayload = true
-			cp.SlashResponse = false
-		})
-
-		sc.Text = parsedCommands
-
-		help, response := slack.ParseFlags(fs, flags)
-		if help == true {
-			cp.Text = response
-		}
-
-		// check if the command wants to send a slash command response
-		if cp.SlashResponse {
-			w.Write([]byte(cp.Text))
-		}
-
-		// don't send payload if hook URL isn't passed
-		if sc.Hook != "" && cp.SendPayload == true {
-			cpJSON, err := json.Marshal(cp)
-			if err != nil {
-				err := errors.New("Unauthorized")
-				http.Error(w, err.Error(), http.StatusForbidden)
-				return
-			}
-
-			cpJSONString := string(cpJSON[:])
-
-			// Make the request to the Slack API.
-			http.PostForm(sc.Hook, url.Values{"payload": {cpJSONString}})
-		}
 	}
+
+	// Set Flags for Commands
+	slack.SetFlag(fs, "channel", "c", "Sends the response to the current channel", func() {
+		cp.Channel = fmt.Sprintf("#%v", sc.ChannelName)
+		cp.SendPayload = true
+		cp.SlashResponse = false
+	})
+
+	slack.SetFlag(fs, "private", "p", "Sends a private message with the response", func() {
+		cp.SendPayload = true
+		cp.SlashResponse = false
+	})
+
+	sc.Text = parsedCommands
+
+	help, response := slack.ParseFlags(fs, flags)
+	if help == true {
+		cp.Text = response
+	}
+
+	// check if the command wants to send a slash command response
+	if cp.SlashResponse {
+		w.Write([]byte(cp.Text))
+	}
+
+	// don't send payload if hook URL isn't passed
+	if sc.Hook != "" && cp.SendPayload == true {
+		cpJSON, err := json.Marshal(cp)
+		if err != nil {
+			err := errors.New("Unauthorized")
+			http.Error(w, err.Error(), http.StatusForbidden)
+			return
+		}
+
+		cpJSONString := string(cpJSON[:])
+
+		// Make the request to the Slack API.
+		http.PostForm(sc.Hook, url.Values{"payload": {cpJSONString}})
+	}
+
 }
 
 func main() {
