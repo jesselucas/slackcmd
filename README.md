@@ -28,3 +28,6 @@ consumerSecret := os.Getenv("TWITTER_CONSUMER_SECRET")
 accessToken := os.Getenv("TWITTER_ACCESS_TOKEN")
 accessTokenSecret := os.Getenv("TWITTER_ACCESS_TOKEN_SECRET")
 ```
+
+### Calendar
+Slack token: SLACK_KEY_CALENDAR
