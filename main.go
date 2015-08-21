@@ -115,6 +115,9 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set Flags for Commands
+	// TODO: Change to use channels instead of callbacks.
+	// https://talks.golang.org/2012/concurrency.slide
+
 	slack.SetFlag(fs, "channel", "c", "Sends the response to the current channel", func() {
 		cp.Channel = fmt.Sprintf("#%v", sc.ChannelName)
 		cp.SendPayload = true
