@@ -15,7 +15,7 @@ import (
 type Command struct {
 }
 
-func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
+func (cmd *Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
 	// read credentials from environment variables
 	slackAPIKey := os.Getenv("SLACK_KEY_BEATS1")
 	consumerKey := os.Getenv("TWITTER_CONSUMER_KEY")

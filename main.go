@@ -79,13 +79,13 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 	// Add commands here
 	switch sc.Command {
 	case "/fg":
-		cmd = trello.Command{}
+		cmd = &trello.Command{}
 		fs.Usage = "/fg help: FG Trello access"
 	case "/beats1":
-		cmd = beats1.Command{}
+		cmd = &beats1.Command{}
 		fs.Usage = "/beats1 help: Song currently playing on Beats1"
 	case "/conference":
-		cmd = calendar.Command{}
+		cmd = &calendar.Command{}
 		fs.Usage = "/conference help: Schedule for FG Conference room"
 	default:
 		err := errors.New("No Command found")

@@ -17,7 +17,7 @@ import (
 type Command struct {
 }
 
-func (cmd Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
+func (cmd *Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, error) {
 	slackAPIKey := os.Getenv("SLACK_KEY_TRELLO")
 	trelloKey := os.Getenv("TRELLO_KEY")
 	trelloToken := os.Getenv("TRELLO_TOKEN")
