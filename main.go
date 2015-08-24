@@ -131,6 +131,7 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 
 	sc.Text = parsedCommands
 
+	// TODO: Move ParseFlags call so it happen before cmd.Request is called
 	help, response := slack.ParseFlags(fs, flags)
 	if help == true {
 		cp.Text = response
