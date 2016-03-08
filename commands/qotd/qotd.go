@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
 
@@ -53,7 +54,7 @@ func (cmd *Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, erro
 		return nil, err
 	}
 
-	cp.Text = questions[0]
+	cp.Text = questions[rand.Intn(len(questions))]
 
 	return cp, nil
 }
