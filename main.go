@@ -12,6 +12,7 @@ import (
 
 	"github.com/jesselucas/slackcmd/commands/beats1"
 	"github.com/jesselucas/slackcmd/commands/calendar"
+	"github.com/jesselucas/slackcmd/commands/qotd"
 	"github.com/jesselucas/slackcmd/commands/trello"
 	"github.com/jesselucas/slackcmd/slack"
 )
@@ -87,6 +88,9 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 	case "/conference":
 		cmd = &calendar.Command{}
 		fs.Usage = "/conference help: Schedule for FG Conference room"
+	case "/qotd":
+		cmd = &qotd.Command{}
+		fs.Usage = "/qotd help: Sends the Question of the Day"
 	default:
 		err := errors.New("No Command found")
 		http.Error(w, err.Error(), http.StatusForbidden)
@@ -115,9 +119,6 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set Flags for Commands
-	// TODO: Change to use channels instead of callbacks.
-	// https://talks.golang.org/2012/concurrency.slide
-
 	slack.SetFlag(fs, "channel", "c", "Sends the response to the current channel", func() {
 		cp.Channel = fmt.Sprintf("#%v", sc.ChannelName)
 		cp.SendPayload = true
