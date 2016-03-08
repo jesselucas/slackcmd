@@ -3,7 +3,11 @@ package qotd
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
+
+	"gopkg.in/yaml.v2"
 
 	"github.com/jesselucas/slackcmd/slack"
 )
@@ -32,7 +36,24 @@ func (cmd *Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, erro
 		SendPayload:   false,
 	}
 
-	cp.Text = "What is your favorite star?"
+	// url for QOTD YAML
+	url := os.Getenv("QOTD_URL")
+
+	res, err := http.Get(url)
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal YAML
+	var questions []string
+	err = yaml.Unmarshal(body, &questions)
+	if err != nil {
+		return nil, err
+	}
+
+	cp.Text = questions[0]
 
 	return cp, nil
 }
