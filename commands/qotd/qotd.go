@@ -62,7 +62,7 @@ func (cmd *Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, erro
 	// Get todays index
 	index := getTodaysIndex(uint(len(questions)))
 
-	cp.Text = questions[index]
+	cp.Text = "QOTD: " + questions[index]
 
 	return cp, nil
 }
