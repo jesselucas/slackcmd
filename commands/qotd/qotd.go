@@ -4,12 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"os"
+	"time"
 
 	"gopkg.in/yaml.v2"
 
+	"github.com/forestgiant/go-simpletime"
 	"github.com/jesselucas/slackcmd/slack"
 )
 
@@ -54,7 +55,24 @@ func (cmd *Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, erro
 		return nil, err
 	}
 
-	cp.Text = questions[rand.Intn(len(questions))]
+	// Get todays index
+	index := getTodaysIndex(len(questions))
+
+	cp.Text = questions[index]
 
 	return cp, nil
+}
+
+// getTodaysIndex subjects the startDate by today's date to get the
+// difference in days and then will modulate based on the length
+// of all the indexes
+func getTodaysIndex(length int) int {
+	startDate := time.Date(2016, 3, 10, 0, 0, 0, 0, time.UTC)
+
+	// Find out day offset of today from the startDate
+	offsetDuration := simpletime.NewSimpleTime(startDate).Since(time.Now())
+	offsetDays := offsetDuration.Days()
+	fmt.Println(offsetDays)
+
+	return int(offsetDays) % length
 }
