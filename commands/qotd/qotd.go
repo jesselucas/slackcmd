@@ -12,6 +12,7 @@ import (
 
 	"github.com/forestgiant/go-simpletime"
 	"github.com/jesselucas/slackcmd/slack"
+	"github.com/jesselucas/validator"
 )
 
 // Command struct is only defined to add the Request method
@@ -40,6 +41,9 @@ func (cmd *Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, erro
 
 	// url for QOTD YAML
 	url := os.Getenv("QOTD_URL")
+	if !validator.IsURL(url) {
+		return nil, errors.New("QOTD_URL is not a valid URL")
+	}
 
 	res, err := http.Get(url)
 	defer res.Body.Close()
@@ -56,7 +60,7 @@ func (cmd *Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, erro
 	}
 
 	// Get todays index
-	index := getTodaysIndex(len(questions))
+	index := getTodaysIndex(uint(len(questions)))
 
 	cp.Text = questions[index]
 
@@ -66,7 +70,7 @@ func (cmd *Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, erro
 // getTodaysIndex subjects the startDate by today's date to get the
 // difference in days and then will modulate based on the length
 // of all the indexes
-func getTodaysIndex(length int) int {
+func getTodaysIndex(length uint) uint {
 	startDate := time.Date(2016, 3, 10, 0, 0, 0, 0, time.UTC)
 
 	// Find out day offset of today from the startDate
@@ -74,5 +78,5 @@ func getTodaysIndex(length int) int {
 	offsetDays := offsetDuration.Days()
 	fmt.Println(offsetDays)
 
-	return int(offsetDays) % length
+	return uint(offsetDays) % length
 }
