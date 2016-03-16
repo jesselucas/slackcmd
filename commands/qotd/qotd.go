@@ -71,7 +71,7 @@ func (cmd *Command) Request(sc *slack.SlashCommand) (*slack.CommandPayload, erro
 // difference in days and then will modulate based on the length
 // of all the indexes
 func getTodaysIndex(length uint) uint {
-	startDate := time.Date(2016, 3, 10, 0, 0, 0, 0, time.UTC)
+	startDate := time.Date(2016, 3, 16, 0, 0, 0, 0, time.UTC)
 
 	// Find out day offset of today from the startDate
 	offsetDuration := simpletime.NewSimpleTime(startDate).Since(time.Now())
