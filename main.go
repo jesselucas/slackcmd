@@ -23,6 +23,28 @@ type env struct {
 	Value string
 }
 
+func main() {
+	// setup environment variables if a config json exist
+	setEnvFromJSON("config.json")
+
+	// url setup. FIX make more generic
+	var url string
+	if os.Getenv("PORT") != "" {
+		url = ":" + os.Getenv("PORT")
+	} else {
+		url = "localhost:8080"
+	}
+
+	// vs := validateSlackToken(http.HandlerFunc(commandHandler), slackAPIKey)
+	http.HandleFunc("/cmd/", commandHandler)
+	http.HandleFunc("/cmd", commandHandler)
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "Go away!")
+	})
+	log.Fatal(http.ListenAndServe(url, nil))
+}
+
 func setEnvFromJSON(configPath string) {
 	configFile, err := ioutil.ReadFile(configPath)
 	if err != nil {
@@ -158,26 +180,4 @@ func commandHandler(w http.ResponseWriter, r *http.Request) {
 		http.PostForm(sc.Hook, url.Values{"payload": {cpJSONString}})
 	}
 
-}
-
-func main() {
-	// setup environment variables if a config json exist
-	setEnvFromJSON("config.json")
-
-	// url setup. FIX make more generic
-	var url string
-	if os.Getenv("PORT") != "" {
-		url = ":" + os.Getenv("PORT")
-	} else {
-		url = "localhost:8080"
-	}
-
-	// vs := validateSlackToken(http.HandlerFunc(commandHandler), slackAPIKey)
-	http.HandleFunc("/cmd/", commandHandler)
-	http.HandleFunc("/cmd", commandHandler)
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Go away!")
-	})
-	log.Fatal(http.ListenAndServe(url, nil))
 }
